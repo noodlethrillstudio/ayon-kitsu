@@ -48,3 +48,5 @@ class IntegrateKitsuReview(KitsuPublishInstancePlugin):
                 revision=instance.data["version"],
             )
             self.log.info("Review upload on comment")
+
+            gazu.task.set_main_preview()
