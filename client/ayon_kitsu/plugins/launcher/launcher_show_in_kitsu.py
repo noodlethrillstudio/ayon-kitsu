@@ -68,9 +68,9 @@ class ShowInKitsu(LauncherAction):
         )
 
         if task:
-            if not (task_id := task.get("kitsuId")):
+            if not ((task_id := task.get("kitsuId")) or (task_id := task["data"].get("kitsuId"))):
                 raise RuntimeError(
-                    f"Task {task['name']} has no connected kitsu entity."
+                    f"Task {task['name']} has no connected kitsu entity. : {task}"
                 )
 
             return gazu.task.get_task_url(
