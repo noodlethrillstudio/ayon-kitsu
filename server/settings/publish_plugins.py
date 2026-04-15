@@ -19,7 +19,7 @@ class CollectFamilyProfile(BaseSettingsModel):
         default_factory=list,
         title="Host names",
     )
-    product_types: list[str] = SettingsField(
+    product_base_types: list[str] = SettingsField(
         default_factory=list,
         title="Families",
     )
@@ -104,6 +104,16 @@ class IntegrateKitsuNotes(BaseSettingsModel):
         title="Custom Comment Template",
     )
 
+class IntegrateKitsuReviews(BaseSettingsModel):
+    match_version_number: bool = SettingsField(
+        title="Match version number",
+        description=(
+            "Set Kitsu note revision to match AYON version number.\n\n"
+            "Note: If enabled avoid uploading reviewables directly"
+            " into Kitsu without passing through AYON, as this can desynchronize"
+            " product version and revision number and cause errors during publish."
+        )
+    )
 
 class PublishPlugins(BaseSettingsModel):
     CollectKitsuFamily: CollectKitsuFamilyPluginModel = SettingsField(
@@ -113,6 +123,10 @@ class PublishPlugins(BaseSettingsModel):
     IntegrateKitsuNote: IntegrateKitsuNotes = SettingsField(
         default_factory=IntegrateKitsuNotes,
         title="Integrate Kitsu Note"
+    )
+    IntegrateKitsuReview: IntegrateKitsuReviews = SettingsField(
+        default_factory=IntegrateKitsuReviews,
+        title="Integrate Kitsu Review"
     )
 
 
@@ -124,7 +138,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "traypublisher"
                 ],
-                "product_types": [],
+                "product_base_types": [],
                 "task_types": [],
                 "task_names": [],
                 "add_ftrack_family": True,
@@ -134,7 +148,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "traypublisher"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "matchmove",
                     "shot"
                 ],
@@ -147,7 +161,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "traypublisher"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "plate",
                     "review",
                     "audio"
@@ -169,7 +183,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "maya"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "model",
                     "setdress",
                     "animation",
@@ -186,7 +200,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "tvpaint"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "renderPass"
                 ],
                 "task_types": [],
@@ -198,7 +212,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "tvpaint"
                 ],
-                "product_types": [],
+                "product_base_types": [],
                 "task_types": [],
                 "task_names": [],
                 "add_kitsu_family": True,
@@ -208,7 +222,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "nuke"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "write",
                     "render",
                     "prerender"
@@ -229,7 +243,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "aftereffects"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "render",
                     "workfile"
                 ],
@@ -242,7 +256,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "flame"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "plate",
                     "take"
                 ],
@@ -255,7 +269,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "houdini"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "usd"
                 ],
                 "task_types": [],
@@ -267,7 +281,7 @@ PUBLISH_DEFAULT_VALUES = {
                 "host_names": [
                     "photoshop"
                 ],
-                "product_types": [
+                "product_base_types": [
                     "review"
                 ],
                 "task_types": [],
@@ -294,5 +308,8 @@ PUBLISH_DEFAULT_VALUES = {
 | family | `{family}` |
 | name | `{name}` |""",
         },
-    }
+    },
+    "IntegrateKitsuReview": {
+        "match_version_number": True,
+    },
 }
