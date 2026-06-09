@@ -10,7 +10,7 @@ from ayon_kitsu.pipeline import KitsuPublishContextPlugin
 class IntegrateKitsuNote(KitsuPublishContextPlugin):
     """Integrate Kitsu Note"""
 
-    order = pyblish.api.IntegratorOrder
+    order = pyblish.api.IntegratorOrder + 0.0001
     label = "Kitsu Note and Status"
     families = ["kitsu"]
 

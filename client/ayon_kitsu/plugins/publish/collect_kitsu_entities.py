@@ -38,8 +38,11 @@ class CollectKitsuEntities(KitsuPublishContextPlugin):
 
         kitsu_entities_by_id = {}
         for instance in filtered_instances:
+            self.log.debug(f"Processing instance {instance.data['name']} for kitsu entity collection.")
             folder_entity = instance.data["folderEntity"]
+            self.log.debug(f"Folder entity: {folder_entity['name']}")
             folder_path = folder_entity["path"]
+            self.log.debug(f"Folder path: {folder_path}")
             kitsu_id = folder_entity["data"].get("kitsuId")
             if not kitsu_id:
                 raise KnownPublishError(

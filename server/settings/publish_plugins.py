@@ -114,6 +114,17 @@ class IntegrateKitsuReviews(BaseSettingsModel):
             " product version and revision number and cause errors during publish."
         )
     )
+   
+class GenerateKitsuEditorial(BaseSettingsModel):
+     task_redirect: str = SettingsField(
+        title="Task Redirect Full Name", 
+        description=(
+        "If set, if attempting an editorial review publish with no task assigned, use this task instead"
+        "of failing the publish (eg, 'animatic_ref' for editorial simple).\n\n"
+        "This is useful for editorial simple publishes where the review reference "
+        "is automatically assigned to the 'shot', which kitsu does not allow uploads to."
+        )
+    )
 
 class PublishPlugins(BaseSettingsModel):
     CollectKitsuFamily: CollectKitsuFamilyPluginModel = SettingsField(
@@ -311,5 +322,6 @@ PUBLISH_DEFAULT_VALUES = {
     },
     "IntegrateKitsuReview": {
         "match_version_number": True,
+        "task_redirect": ""
     },
 }
