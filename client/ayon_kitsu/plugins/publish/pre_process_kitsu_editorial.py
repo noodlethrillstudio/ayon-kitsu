@@ -13,7 +13,7 @@ class GenerateKitsuEditorial(KitsuPublishContextPlugin):
 
     order = pyblish.api.CollectorOrder + 0.498
     label = "Generate Kitsu Editorial Tasks"
-    task_redirect = "Animatic_Ref"
+    
 
     def generate_tasks(self, context):
         """Generate kitsu tasks for the shot if they don't exist."""
@@ -116,8 +116,9 @@ class GenerateKitsuEditorial(KitsuPublishContextPlugin):
                 redirect_task = gazu.task.get_task_by_name(
                     kitsu_shot, redirect_task_type
                 )
+                todo = gazu.task.get_task_status_by_name("ToDo")
+
                 if not redirect_task:
-                    todo = gazu.task.get_task_status_by_name("ToDo")
                     redirect_task = gazu.task.new_task(
                         kitsu_shot,
                         redirect_task_type,
@@ -126,3 +127,65 @@ class GenerateKitsuEditorial(KitsuPublishContextPlugin):
                     )
                 if redirect_task:
                     instance.data["kitsuTask"] = redirect_task
+                project_task_types = kitsu_project["task_types"]
+                for task_type_id in project_task_types:
+                    task_type = gazu.task.get_task_type(task_type_id)
+                    if task_type["for_entity"] == "Shot":
+                        task = gazu.task.get_task_by_name(kitsu_shot, task_type)
+                        if not task:
+                            self.log.debug(f"Task of type '{task_type['name']}' not found on shot, generating.")
+                            task = gazu.task.new_task(
+                                kitsu_shot,
+                                task_type,
+                                name="main",
+                                task_status=todo,
+                            )
+                        else:
+                            self.log.debug(f"Found task of type '{task_type['name']}' on shot.")
+                    
+        self.assign_missing_tasks(context)
+
+    def assign_missing_tasks(self, context):
+        task_type = gazu.task.get_task_type_by_name(self.task_redirect)
+        if not task_type:
+            raise KnownPublishError(
+                f"Task type '{self.task_redirect}' not found in Kitsu."
+            )
+
+        for instance in context:
+            if "editorial" not in (instance.data.get("creator_identifier","")):
+                continue
+
+            folder_entity = instance.data.get("folderEntity")
+            if not folder_entity:
+                continue
+
+            folder_path = folder_entity["path"]
+
+            # Prefer in-memory entity resolved earlier this run; fall back to AYON id.
+            shot = instance.data.get("kitsuEntity")
+            if not shot:
+                kitsu_id = folder_entity["data"].get("kitsuId")
+                if not kitsu_id:
+                    self.log.warning(
+                        f"No kitsu id available for '{folder_path}', skipping task assignment."
+                    )
+                    continue
+                shot = gazu.entity.get_entity(kitsu_id)
+                if not shot:
+                    self.log.warning(
+                        f"Entity '{kitsu_id}' not found in Kitsu for '{folder_path}', skipping."
+                    )
+                    continue
+
+            self.log.debug(f"Assigning task for shot: {shot['id']}")
+            kitsu_task = gazu.task.get_task_by_name(shot, task_type)
+            if kitsu_task:
+                kitsu_task = gazu.task.get_task(kitsu_task["id"])
+
+            self.log.debug(f"Found task: {kitsu_task['id']}") if kitsu_task else self.log.debug("No task found")
+            if not kitsu_task:
+                self.log.debug("No task found for editorial review comment.")
+                continue
+
+            instance.data["kitsuTask"] = kitsu_task

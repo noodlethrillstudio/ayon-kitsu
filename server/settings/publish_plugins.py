@@ -115,7 +115,7 @@ class IntegrateKitsuReviews(BaseSettingsModel):
         )
     )
    
-class GenerateKitsuEditorial(BaseSettingsModel):
+class GenerateKitsuEditorials(BaseSettingsModel):
      task_redirect: str = SettingsField(
         title="Task Redirect Full Name", 
         description=(
@@ -138,6 +138,10 @@ class PublishPlugins(BaseSettingsModel):
     IntegrateKitsuReview: IntegrateKitsuReviews = SettingsField(
         default_factory=IntegrateKitsuReviews,
         title="Integrate Kitsu Review"
+    )
+    GenerateKitsuEditorial: GenerateKitsuEditorials = SettingsField(
+        default_factory=GenerateKitsuEditorials,
+        title="Generate Kitsu Editorial"
     )
 
 
@@ -321,7 +325,9 @@ PUBLISH_DEFAULT_VALUES = {
         },
     },
     "IntegrateKitsuReview": {
-        "match_version_number": True,
-        "task_redirect": ""
+        "match_version_number": True
     },
+    "GenerateKitsuEditorial": {
+        "task_redirect": "Animatic_Ref"
+    }
 }
